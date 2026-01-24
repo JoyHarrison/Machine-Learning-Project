@@ -1,0 +1,11 @@
+streamlit>=1.30.0
+
+faiss-cpu>=1.7.4
+
+pypdf>=3.17.0
+
+sentence-transformers>=2.2.2
+
+transformers>=4.36.0
+
+torch>=2.0.0
