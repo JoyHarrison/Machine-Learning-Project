@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Streamlit
+.streamlit/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data folders (IMPORTANT)
+data/uploads/
+data/vectorstore/
+data/vectorstores/
+
+# IDE
+.vscode/
+.idea/
