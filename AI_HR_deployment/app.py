@@ -14,6 +14,9 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 # ======================================================
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
+if not os.path.exists(os.path.join(APP_DIR, "demo")):
+    APP_DIR = os.path.join(APP_DIR, "AI_HR_deployment")
+
 
 BASE_DIR = os.path.join(APP_DIR, "data")
 UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
