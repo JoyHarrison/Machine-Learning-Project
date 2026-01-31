@@ -10,10 +10,16 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 # ======================================================
+# PATH FIX (STREAMLIT CLOUD SAFE)
+# ======================================================
+
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# ======================================================
 # CONFIG
 # ======================================================
 
-BASE_DIR = "data"
+BASE_DIR = os.path.join(APP_DIR, "data")
 COMPANIES_META = os.path.join(BASE_DIR, "companies.json")
 
 EMBED_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
@@ -21,7 +27,8 @@ LLM_MODEL_NAME = "google/flan-t5-base"
 
 DEMO_COMPANY_ID = "demo-company"
 DEMO_COMPANY_NAME = "Demo Company (Portfolio)"
-DEMO_DIR = "demo"
+
+DEMO_DIR = os.path.join(APP_DIR, "demo")
 DEMO_PDF = os.path.join(DEMO_DIR, "demo_policy.pdf")
 DEMO_QUESTIONS = os.path.join(DEMO_DIR, "demo_questions.json")
 
@@ -155,9 +162,7 @@ def index_company_pdfs(cid):
 
     for file in os.listdir(uploads_dir):
         if file.lower().endswith(".pdf"):
-            all_chunks.extend(
-                extract_pdf_chunks(os.path.join(uploads_dir, file))
-            )
+            all_chunks.extend(extract_pdf_chunks(os.path.join(uploads_dir, file)))
 
     if not all_chunks:
         return False
@@ -166,54 +171,33 @@ def index_company_pdfs(cid):
     return True
 
 # ======================================================
-# DEMO INDEX (CRITICAL FIX)
+# DEMO INDEX
 # ======================================================
 
 def ensure_demo_index():
     _, vs_dir = get_company_dirs(DEMO_COMPANY_ID)
-
     index_path = os.path.join(vs_dir, "index.faiss")
+
     if os.path.exists(index_path):
         return
 
     if not os.path.exists(DEMO_PDF):
-        st.error("❌ demo_policy.pdf not found in deployment")
+        st.error("❌ Demo PDF missing")
         return
 
     chunks = extract_pdf_chunks(DEMO_PDF)
-    if not chunks:
-        st.error("❌ Demo PDF loaded but no text extracted")
-        return
-
     build_index(chunks, vs_dir)
 
 # ======================================================
-# PROMPT ENGINEERING
-# ======================================================
-
-def improve_prompt(question: str) -> str:
-    prompt = f"""
-Rewrite the question to be clear, specific, and suitable for HR policy Q&A.
-
-Original:
-{question}
-
-Improved:
-"""
-    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
-    outputs = model.generate(**inputs, max_new_tokens=80, temperature=0.3)
-    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip() or question
-
-# ======================================================
-# ANSWER GENERATION
+# ANSWER
 # ======================================================
 
 def generate_answer(question, chunk):
     if not chunk:
-        return "I do not have that information in the company documents."
+        return "I do not have that information in the uploaded documents."
 
     prompt = f"""
-Answer using ONLY the policy text below.
+Answer using ONLY the policy text.
 
 Policy:
 {chunk['text']}
@@ -228,17 +212,7 @@ Answer:
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 # ======================================================
-# DEMO QUESTIONS
-# ======================================================
-
-def load_demo_questions():
-    if not os.path.exists(DEMO_QUESTIONS):
-        return []
-    with open(DEMO_QUESTIONS, encoding="utf-8") as f:
-        return json.load(f)
-
-# ======================================================
-# UI: EMPLOYEE
+# UI: EMPLOYEE (UPLOAD FEATURE ADDED)
 # ======================================================
 
 def employee_ui():
@@ -253,39 +227,31 @@ def employee_ui():
 
     if cid == DEMO_COMPANY_ID:
         ensure_demo_index()
-
-    indexed = os.path.exists(os.path.join(vs_dir, "index.faiss"))
-
-    if indexed:
-        st.info("📚 Policy documents indexed and ready")
+        st.info("📚 Demo policy indexed")
     else:
-        st.warning("⚠️ No indexed documents available")
+        st.markdown("### 📄 Upload policy PDFs")
+        files = st.file_uploader("Upload PDFs", type=["pdf"], accept_multiple_files=True)
+
+        if files:
+            for f in files:
+                with open(os.path.join(uploads_dir, f.name), "wb") as out:
+                    out.write(f.getbuffer())
+            st.success("Files uploaded")
+
+        if st.button("📦 Index uploaded files"):
+            with st.spinner("Indexing..."):
+                if index_company_pdfs(cid):
+                    st.success("Documents indexed")
+                else:
+                    st.warning("No PDFs found")
 
     st.divider()
 
-    if cid == DEMO_COMPANY_ID:
-        demo_qs = load_demo_questions()
-        if demo_qs:
-            st.markdown("### 💡 Try a demo question")
-            question = st.selectbox("Demo questions", demo_qs)
-        else:
-            question = ""
-    else:
-        question = ""
+    question = st.text_input("Ask a policy question")
 
-    user_input = st.text_input("Ask a policy question", value=question)
-
-    use_pe = st.checkbox("🛠 Improve my question")
-    send = st.button("Send")
-
-    if not send or not user_input.strip():
-        return
-
-    final_q = improve_prompt(user_input) if use_pe else user_input
-
-    with st.chat_message("assistant"):
-        chunk = retrieve_top_chunk(vs_dir, final_q)
-        answer = generate_answer(final_q, chunk)
+    if st.button("Send") and question:
+        chunk = retrieve_top_chunk(vs_dir, question)
+        answer = generate_answer(question, chunk)
         st.markdown(answer)
 
         if chunk:
@@ -299,40 +265,24 @@ def admin_ui():
     st.subheader("🛠 Admin Panel")
 
     companies = load_companies()
-    company_names = [v["name"] for k, v in companies.items() if k != DEMO_COMPANY_ID]
+    names = [v["name"] for k, v in companies.items() if k != DEMO_COMPANY_ID]
 
-    if company_names:
-        selected = st.selectbox("🏢 Select company", company_names)
+    if names:
+        selected = st.selectbox("Select company", names)
         cid = next(k for k, v in companies.items() if v["name"] == selected)
 
         uploads_dir, _ = get_company_dirs(cid)
 
-        files = st.file_uploader("Upload policy PDFs", type=["pdf"], accept_multiple_files=True)
-
+        files = st.file_uploader("Upload company PDFs", type=["pdf"], accept_multiple_files=True)
         if files:
-            for file in files:
-                with open(os.path.join(uploads_dir, file.name), "wb") as f:
-                    f.write(file.getbuffer())
-            st.success("Files uploaded")
+            for f in files:
+                with open(os.path.join(uploads_dir, f.name), "wb") as out:
+                    out.write(f.getbuffer())
+            st.success("Uploaded")
 
-        if st.button("📦 Build / Rebuild Index"):
-            with st.spinner("Indexing..."):
-                if index_company_pdfs(cid):
-                    st.success("Index built successfully")
-                else:
-                    st.warning("No PDFs found")
-
-        if st.button(f"❌ Delete {selected}"):
-            delete_company(cid)
-            st.rerun()
-
-    st.divider()
-
-    name = st.text_input("New company name")
-    if st.button("Create company") and name:
-        create_company(name)
-        st.success("Company created")
-        st.rerun()
+        if st.button("Rebuild index"):
+            index_company_pdfs(cid)
+            st.success("Index rebuilt")
 
 # ======================================================
 # MAIN
