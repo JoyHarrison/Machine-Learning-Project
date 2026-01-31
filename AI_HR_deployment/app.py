@@ -36,6 +36,7 @@ def load_companies():
     if os.path.exists(COMPANIES_META):
         with open(COMPANIES_META, "r", encoding="utf-8") as f:
             companies = json.load(f)
+
     companies.setdefault(DEMO_COMPANY_ID, {"name": DEMO_COMPANY_NAME})
     return companies
 
@@ -165,19 +166,26 @@ def index_company_pdfs(cid):
     return True
 
 # ======================================================
-# DEMO
+# DEMO INDEX (CRITICAL FIX)
 # ======================================================
 
 def ensure_demo_index():
     _, vs_dir = get_company_dirs(DEMO_COMPANY_ID)
 
-    if os.path.exists(os.path.join(vs_dir, "index.faiss")):
+    index_path = os.path.join(vs_dir, "index.faiss")
+    if os.path.exists(index_path):
         return
 
     if not os.path.exists(DEMO_PDF):
+        st.error("❌ demo_policy.pdf not found in deployment")
         return
 
-    build_index(extract_pdf_chunks(DEMO_PDF), vs_dir)
+    chunks = extract_pdf_chunks(DEMO_PDF)
+    if not chunks:
+        st.error("❌ Demo PDF loaded but no text extracted")
+        return
+
+    build_index(chunks, vs_dir)
 
 # ======================================================
 # PROMPT ENGINEERING
@@ -197,7 +205,7 @@ Improved:
     return tokenizer.decode(outputs[0], skip_special_tokens=True).strip() or question
 
 # ======================================================
-# ANSWER
+# ANSWER GENERATION
 # ======================================================
 
 def generate_answer(question, chunk):
@@ -205,16 +213,29 @@ def generate_answer(question, chunk):
         return "I do not have that information in the company documents."
 
     prompt = f"""
-Answer using ONLY the policy text.
+Answer using ONLY the policy text below.
 
+Policy:
 {chunk['text']}
 
-Question: {question}
+Question:
+{question}
+
 Answer:
 """
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
-    outputs = model.generate(**inputs, max_new_tokens=80)
+    outputs = model.generate(**inputs, max_new_tokens=120)
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+# ======================================================
+# DEMO QUESTIONS
+# ======================================================
+
+def load_demo_questions():
+    if not os.path.exists(DEMO_QUESTIONS):
+        return []
+    with open(DEMO_QUESTIONS, encoding="utf-8") as f:
+        return json.load(f)
 
 # ======================================================
 # UI: EMPLOYEE
@@ -230,64 +251,45 @@ def employee_ui():
 
     uploads_dir, vs_dir = get_company_dirs(cid)
 
-    # ---- INDEX STATUS ----
-    indexed = os.path.exists(os.path.join(vs_dir, "index.faiss"))
-    pdf_count = len([f for f in os.listdir(uploads_dir) if f.endswith(".pdf")])
-
     if cid == DEMO_COMPANY_ID:
         ensure_demo_index()
-        st.info("📚 Demo policy document indexed and ready")
+
+    indexed = os.path.exists(os.path.join(vs_dir, "index.faiss"))
+
+    if indexed:
+        st.info("📚 Policy documents indexed and ready")
     else:
-        if indexed and pdf_count > 0:
-            st.success(f"📚 {pdf_count} document(s) indexed and ready")
-        else:
-            st.warning("⚠️ No indexed documents yet. Please contact admin.")
+        st.warning("⚠️ No indexed documents available")
 
     st.divider()
 
-    chat_key = f"chat_{cid}"
-    st.session_state.setdefault(chat_key, [])
-    st.session_state.setdefault("draft_question", "")
-    st.session_state.setdefault("submitted", False)
+    if cid == DEMO_COMPANY_ID:
+        demo_qs = load_demo_questions()
+        if demo_qs:
+            st.markdown("### 💡 Try a demo question")
+            question = st.selectbox("Demo questions", demo_qs)
+        else:
+            question = ""
+    else:
+        question = ""
 
-    if st.session_state["submitted"]:
-        st.session_state["draft_question"] = ""
-        st.session_state["submitted"] = False
+    user_input = st.text_input("Ask a policy question", value=question)
 
-    for msg in st.session_state[chat_key]:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
-
-    user_input = st.text_input("Ask a policy question", key="draft_question")
-
-    use_pe = st.checkbox("🛠 Prompt Engineering (Improve my question)")
+    use_pe = st.checkbox("🛠 Improve my question")
     send = st.button("Send")
 
-    if not send:
+    if not send or not user_input.strip():
         return
 
-    question = user_input.strip()
-    if not question:
-        st.warning("Please enter a question.")
-        return
-
-    if use_pe:
-        with st.spinner("Applying prompt engineering..."):
-            question = improve_prompt(question)
-        st.info(question)
-
-    st.session_state[chat_key].append({"role": "user", "content": question})
+    final_q = improve_prompt(user_input) if use_pe else user_input
 
     with st.chat_message("assistant"):
-        chunk = retrieve_top_chunk(vs_dir, question)
-        answer = generate_answer(question, chunk)
+        chunk = retrieve_top_chunk(vs_dir, final_q)
+        answer = generate_answer(final_q, chunk)
         st.markdown(answer)
 
         if chunk:
-            st.caption(f"📄 {chunk.get('source', 'Policy Document')} — Page {chunk['page']}")
-
-    st.session_state[chat_key].append({"role": "assistant", "content": answer})
-    st.session_state["submitted"] = True
+            st.caption(f"📄 {chunk['source']} — Page {chunk['page']}")
 
 # ======================================================
 # UI: ADMIN
@@ -305,34 +307,29 @@ def admin_ui():
 
         uploads_dir, _ = get_company_dirs(cid)
 
-        st.markdown("### 📄 Upload policy PDFs")
-
-        files = st.file_uploader("Upload PDFs", type=["pdf"], accept_multiple_files=True)
+        files = st.file_uploader("Upload policy PDFs", type=["pdf"], accept_multiple_files=True)
 
         if files:
             for file in files:
                 with open(os.path.join(uploads_dir, file.name), "wb") as f:
                     f.write(file.getbuffer())
-            st.success(f"Uploaded {len(files)} file(s)")
+            st.success("Files uploaded")
 
         if st.button("📦 Build / Rebuild Index"):
-            with st.spinner("Indexing documents..."):
+            with st.spinner("Indexing..."):
                 if index_company_pdfs(cid):
                     st.success("Index built successfully")
                 else:
                     st.warning("No PDFs found")
-
-        st.divider()
 
         if st.button(f"❌ Delete {selected}"):
             delete_company(cid)
             st.rerun()
 
     st.divider()
-    st.markdown("### ➕ Create new company")
 
-    name = st.text_input("Company name")
-    if st.button("Create") and name:
+    name = st.text_input("New company name")
+    if st.button("Create company") and name:
         create_company(name)
         st.success("Company created")
         st.rerun()
