@@ -10,21 +10,22 @@ from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 # ======================================================
-# CONFIG
+# SAFE BASE PATH (Cloud-proof)
 # ======================================================
 
-BASE_DIR = "data"
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
+BASE_DIR = os.path.join(BASE_PATH, "data")
 COMPANIES_META = os.path.join(BASE_DIR, "companies.json")
+
+DEMO_PDF = os.path.join(BASE_PATH, "demo_policy.pdf")
+DEMO_QUESTIONS = os.path.join(BASE_PATH, "demo_questions.json")
 
 EMBED_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 LOCAL_LLM_NAME = "google/flan-t5-base"
 
 DEMO_COMPANY_ID = "demo-company"
 DEMO_COMPANY_NAME = "Demo Company (Portfolio)"
-
-# Demo files in root
-DEMO_PDF = "demo_policy.pdf"
-DEMO_QUESTIONS = "demo_questions.json"
 
 os.makedirs(BASE_DIR, exist_ok=True)
 
@@ -194,6 +195,7 @@ def ensure_demo_index():
         return
 
     if not os.path.exists(DEMO_PDF):
+        st.warning("Demo PDF missing.")
         return
 
     chunks = extract_pdf_chunks(DEMO_PDF)
@@ -212,12 +214,17 @@ def employee_ui():
     cid = name_to_id[company]
     uploads, vs_dir = get_company_dirs(cid)
 
-    # Demo questions
+    # ✅ Demo questions (safe load)
     if cid == DEMO_COMPANY_ID and os.path.exists(DEMO_QUESTIONS):
         st.markdown("### 💡 Example questions")
-        for q in json.load(open(DEMO_QUESTIONS)):
-            if st.button(q):
-                st.session_state["auto_question"] = q
+        try:
+            demo_qs = json.load(open(DEMO_QUESTIONS))
+            for q in demo_qs:
+                if st.button(q):
+                    st.session_state["auto_question"] = q
+        except Exception as e:
+            st.error("Failed to load demo questions")
+            st.write(e)
 
     with st.expander("📄 Upload HR Policy PDFs"):
         files = st.file_uploader("Upload PDFs", type=["pdf"], accept_multiple_files=True)
@@ -298,7 +305,6 @@ def admin_ui():
 def main():
     st.set_page_config("AI HR Assistant", "🧑‍💼", layout="wide")
 
-    # ✅ Pre-index demo before UI loads
     ensure_demo_index()
 
     tab1, tab2 = st.tabs(["Employee", "Admin"])
