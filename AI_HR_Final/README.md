@@ -103,23 +103,4 @@ Aspiring Machine Learning / AI Engineer
 🔗 GitHub: https://github.com/JoyHarrison
 
 ⭐ If you find this project useful, feel free to star the repository!
-
-
 ---
-
-### ✅ Final checklist (do this once)
-- Paste into **Notepad**
-- Save as **README.md**
-- Save inside **AI_HR_Final**
-- Commit & push to GitHub
-
-Once this is live, your repo jumps from *“student project”* to *“entry-level ML engineer portfolio”* energy 💼🔥  
-
-If you want next:
-- I can write **resume bullets**
-- A **LinkedIn post**
-- Or tailor this README for **FAANG / startup recruiters**
-
-Just say the word 🚀
-
-
