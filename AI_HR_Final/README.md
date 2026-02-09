@@ -54,6 +54,7 @@ This project implements a **Retrieval-Augmented Generation (RAG)** pipeline:
 ---
 
 ## 📂 Project Structure
+'''
 AI_HR_Final/
 │
 ├── app.py # Main Streamlit application
@@ -66,6 +67,8 @@ AI_HR_Final/
 │
 ├── requirements.txt # Python dependencies
 └── README.md # Project documentation
+
+'''
 
 
 ---
