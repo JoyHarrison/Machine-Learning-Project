@@ -53,26 +53,6 @@ This project implements a **Retrieval-Augmented Generation (RAG)** pipeline:
 
 ---
 
-## 📂 Project Structure
-## 📂 Project Structure
-
-```text
-AI_HR_Final/
-│
-├── app.py                  # Main Streamlit application
-├── core/
-│   └── rag.py              # RAG pipeline logic
-│
-├── data/
-│   ├── uploads/            # Uploaded documents
-│   └── vectorstore/        # FAISS index storage
-│
-├── requirements.txt        # Python dependencies
-└── README.md               # Project documentation
-```
-
-
----
 
 ## ▶️ How to Run Locally
 
