@@ -1,0 +1,240 @@
+=== PROFILE ===
+Name: Joy Harrison
+Gender: Male
+Email: joyharrisonn@gmail.com
+Role: Business Analytics and AI Graduate Student
+Summary:
+Joy Harrison is a Business Analytics and AI graduate student specializing in machine learning engineering, data analytics, and intelligent system deployment. He builds predictive models, NLP systems, deep learning applications, and analytics dashboards that transform raw data into measurable business value.
+
+Programming:
+- Python (Pandas, NumPy, Scikit-learn, TensorFlow, Keras)
+- SQL (MySQL, PostgreSQL)
+
+Tools:
+- Power BI
+- Excel
+- Jupyter Notebook
+- Git
+- Streamlit
+
+Machine Learning:
+- Supervised Learning (Regression, Classification)
+- Unsupervised Learning (Clustering, Segmentation)
+- Feature Engineering
+- Model Selection & Hyperparameter Tuning
+- Cross-Validation
+- Model Evaluation Metrics (Accuracy, Precision, Recall, F1, ROC-AUC)
+- Data Preprocessing & Pipeline Design
+- Neural Networks & Deep Learning
+- Convolutional Neural Networks (CNN)
+- Natural Language Processing (NLP)
+- Semantic Search & Embeddings
+- Model Deployment & Inference Systems
+- ML Pipeline Automation
+- Vector Databases & FAISS Indexing
+- Retrieval-Augmented Generation (RAG)
+
+Analytics:
+- Exploratory Data Analysis (EDA)
+- Statistical Modeling
+- Data Cleaning & Transformation
+- Data Visualization
+- Business Analytics
+- Dashboard Design
+=== EXPERIENCE ===
+
+Internship:
+Company: Externs Club Pvt Ltd
+Role: Machine Learning / Data Science Intern
+Period: Mar 2023 – May 2023
+Impact:
+- Generated operational value by restructuring fragmented multi-source datasets, reducing preprocessing time by ~35% and accelerating machine learning development cycles
+- Increased model classification accuracy by ~18% through targeted feature engineering and exploratory analysis, improving predictive reliability
+- Delivered scalable ML pipelines that shortened experimentation time and enabled faster deployment of data-driven solutions
+
+Internship:
+Company: Prodigy InfoTech
+Role: Machine Learning Intern
+Period: Apr 2024 – May 2024
+Impact:
+- Generated customer segmentation insights using K-Means clustering, improving behavioral understanding and strategic targeting by ~25%
+- Built a CNN-based real-time hand gesture recognition system, demonstrating scalable AI interaction capability and high classification reliability
+- Improved model stability by ~20% through preprocessing optimization and hyperparameter tuning, increasing prediction consistency
+
+Internship:
+Company: Unified Mentor Private Limited
+Role: Data Analysis Intern
+Period: Apr 2024 – May 2024
+Impact:
+- Generated strategic business insights through structured market analytics, enabling data-driven planning and improved decision efficiency
+- Designed Power BI dashboards that reduced manual reporting workload by ~40% while increasing KPI visibility for stakeholders
+- Translated complex analytical findings into executive-ready insights that strengthened cross-team alignment and strategy execution
+
+Internship:
+Company: Miso
+Role: Data Analysis Intern
+Period: Sep 2024 – Dec 2024
+Impact:
+- Identified purchasing behavior trends that revealed growth opportunities and supported revenue optimization initiatives
+- Increased reporting accuracy by ~30% through advanced dataset cleaning and transformation pipelines
+- Delivered actionable analytics recommendations that strengthened customer engagement strategies and improved sales performance
+
+=== MACHINE LEARNING PROJECTS ===
+
+Project: Decision Tree Bank Churn Prediction
+Type: Supervised Machine Learning (Classification)
+Tools: Python, Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn
+Summary:
+Engineered a predictive churn modeling system using decision tree classification to identify high-risk banking customers and support retention strategy.
+Impact:
+- Built an end-to-end ML pipeline including preprocessing, categorical encoding, and feature engineering
+- Identified behavioral churn drivers through exploratory analytics, improving model interpretability
+- Validated model performance using cross-validation and ROC-AUC metrics to ensure prediction reliability
+- Enabled data-driven customer retention insights through interpretable classification outputs
+
+Project: Spam Email Classification
+Type: NLP Classification System
+Tools: Python, NLTK, Scikit-learn, TF-IDF
+Summary:
+Developed a scalable NLP pipeline that classifies emails as spam or legitimate using probabilistic learning and text vectorization.
+Impact:
+- Designed automated text preprocessing pipeline including tokenization, cleaning, and stop-word removal
+- Implemented TF-IDF vectorization to convert text into machine-readable features
+- Trained Naive Bayes classifier achieving high spam detection accuracy
+- Delivered an intelligent filtering system applicable to communication security
+
+Project: Bank Churn Prediction and Deployment
+Type: Machine Learning Deployment System
+Tools: Python, Scikit-learn, Streamlit, Joblib
+Live Demo: https://machine-learning-project-2amhdermrpx8gss6zfxeom.streamlit.app/
+Summary:
+Built a production-ready churn prediction platform that integrates machine learning modeling with live deployment for real-time inference.
+Impact:
+- Engineered preprocessing and modeling pipelines with feature scaling and tuning
+- Serialized trained models for real-time deployment using Joblib
+- Developed interactive Streamlit interface enabling live risk predictions
+- Demonstrated full ML lifecycle from modeling to production deployment
+
+Project: AI HR Assistant Deployment
+Type: Semantic Search Knowledge System
+Tools: Python, Sentence Transformers, FAISS, Streamlit
+Live Demo:https://machine-learning-project-q9hqkxfvr8apkoukx2tsaq.streamlit.app/
+Summary:
+Designed an AI-powered HR assistant that retrieves company policy answers using semantic document search and embedding-based retrieval.
+Impact:
+- Implemented document chunking and semantic embedding pipeline
+- Built FAISS vector index for fast similarity search across policies
+- Enabled real-time natural language querying of HR knowledge base
+- Demonstrated applied enterprise document intelligence engineering
+
+Project: Salary Prediction Model
+Type: Regression Analytics
+Tools: Python, Pandas, Scikit-learn, Seaborn
+Summary:
+Developed a predictive regression model estimating employee salaries using structured workforce analytics.
+Impact:
+- Performed data cleaning and feature scaling to improve model performance
+- Conducted statistical analysis to identify salary predictors
+- Evaluated regression accuracy using RMSE and R-squared metrics
+- Delivered workforce analytics insights for compensation modeling
+
+Project: Delivery Date Prediction
+Type: Predictive Logistics Analytics
+Tools: Python, Pandas, Scikit-learn
+Summary:
+Engineered a forecasting model predicting delivery timelines using historical shipment data.
+Impact:
+- Transformed logistics datasets into predictive feature sets
+- Built regression model improving delivery estimation accuracy
+- Visualized operational trends supporting supply chain decisions
+- Demonstrated applied analytics in logistics optimization
+
+Project: AI Knowledge Base Chatbot (RAG System)
+Type: Retrieval-Augmented Generation (NLP + Semantic Search)
+Tools: Python, Sentence Transformers, FAISS, Streamlit, Hugging Face Transformers
+Summary:
+Engineered an AI-powered knowledge retrieval chatbot that answers domain-specific questions using a structured document knowledge base.
+Impact:
+- Built a Retrieval-Augmented Generation pipeline enforcing source-grounded responses
+- Structured machine-readable knowledge base improving retrieval accuracy
+- Implemented semantic embeddings and vector search indexing
+- Designed multi-chunk voting system increasing answer reliability
+- Developed real-time interactive AI interface
+
+=== DEEP LEARNING PROJECTS ===
+
+Project: Dog vs Cat Image Classification
+Type: Computer Vision (CNN)
+Tools: TensorFlow, Keras
+Summary:
+Developed a CNN-based image classifier distinguishing dogs and cats using large-scale training data.
+Impact:
+- Built convolutional architecture with dropout to reduce overfitting
+- Applied augmentation improving model generalization
+- Achieved strong classification performance in real-world testing
+- Demonstrated applied deep learning for visual recognition
+
+Project: Real-Time Hand Gesture Recognition
+Type: Computer Vision (CNN)
+Tools: TensorFlow, Keras
+Summary:
+Designed a deep learning system enabling real-time gesture recognition for interactive AI applications.
+Impact:
+- Engineered preprocessing pipeline increasing robustness
+- Trained multi-class CNN gesture classifier
+- Supported scalable human-computer interaction systems
+- Demonstrated applied real-time computer vision
+
+Project: Pneumonia Detection from X-rays
+Type: Medical Imaging AI
+Tools: TensorFlow, Keras
+Summary:
+Built a CNN-based medical diagnostic system detecting pneumonia from chest X-rays.
+Impact:
+- Balanced dataset and applied augmentation to address bias
+- Reduced overfitting using dropout regularization
+- Evaluated model with precision and recall metrics
+- Demonstrated AI applications in healthcare diagnostics
+
+Project: Telecom Churn ANN
+Type: Deep Neural Network
+Tools: TensorFlow, Keras
+Summary:
+Developed an ANN predicting telecom customer churn using structured datasets.
+Impact:
+- Implemented categorical encoding and feature scaling
+- Designed multi-layer neural architecture
+- Improved churn prediction reliability
+- Enabled data-driven retention strategy insights
+
+=== DATA ANALYSIS PROJECTS ===
+
+Project: Amazon Sales Dashboard
+Type: Business Intelligence Analytics
+Tools: Python, Pandas, Matplotlib, Seaborn
+Summary:
+Built an interactive dashboard analyzing global Amazon sales performance.
+Impact:
+- Processed large datasets for revenue trend analysis
+- Identified growth opportunities via visualization
+- Delivered actionable business intelligence insights
+
+Project: Bird Strike Analysis
+Type: Aviation Safety Analytics
+Tools: Python, Pandas
+Summary:
+Analyzed wildlife strike incidents to identify aviation safety risks.
+Impact:
+- Cleaned and structured historical aviation datasets
+- Identified high-risk airports and aircraft patterns
+- Supported risk mitigation strategy planning
+
+Project: Electric Vehicle Population Analysis
+Type: Sustainability Analytics
+Tools: Python, Pandas, Matplotlib
+Summary:
+Explored EV adoption trends using large-scale analytics.
+Impact:
+- Aggregated geographic adoption data
+- Visualized sustainability growth patterns
+- Delivered insights into clean transportation trends
