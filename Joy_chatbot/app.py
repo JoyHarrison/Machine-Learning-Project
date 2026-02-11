@@ -1,14 +1,27 @@
 import streamlit as st
 import pickle
 import re
+import os
 
-CHUNK_FILE = "chunks.pkl"
+# =========================
+# Base directory (important for Streamlit Cloud)
+# =========================
+BASE_DIR = os.path.dirname(__file__)
+
+CHUNK_FILE = os.path.join(BASE_DIR, "chunks.pkl")
+PROFILE_IMG = os.path.join(BASE_DIR, "profile.png")
+RESUME_ML = os.path.join(BASE_DIR, "resume_ml.pdf")
+RESUME_DA = os.path.join(BASE_DIR, "resume_da.pdf")
 
 # =========================
 # Load memory
 # =========================
 @st.cache_resource
 def load_chunks():
+    if not os.path.exists(CHUNK_FILE):
+        st.error(f"Missing file: {CHUNK_FILE}")
+        return []
+
     with open(CHUNK_FILE, "rb") as f:
         return pickle.load(f)
 
@@ -19,11 +32,9 @@ chunks = load_chunks()
 # =========================
 def extract_skills():
     skills = []
-
     for chunk in chunks:
         if "Programming:" in chunk or "Machine Learning:" in chunk:
             skills.append(chunk)
-
     return "\n".join(skills)
 
 
@@ -80,8 +91,8 @@ def extract_email():
 # =========================
 def answer_projects():
     projects = extract_projects()
-
     text = "📌 **Projects:**\n"
+
     for p in projects:
         text += f"\n🔹 **{p['name']}**\n"
         text += f"Summary: {p['summary']}\n"
@@ -92,8 +103,8 @@ def answer_projects():
 
 def answer_experience():
     internships = extract_experience()
-
     text = "📌 **Experience:**\n"
+
     for i in internships:
         text += f"\n🔹 **{i['company']} — {i['role']}**\n"
         text += f"Impact: {i['impact']}\n"
@@ -137,7 +148,9 @@ st.set_page_config(page_title="Joy Harrison AI Assistant", layout="wide")
 # Sidebar branding panel
 # =========================
 with st.sidebar:
-    st.image("profile.png", width=120)
+
+    if os.path.exists(PROFILE_IMG):
+        st.image(PROFILE_IMG, width=120)
 
     st.title("Joy Harrison")
 
@@ -166,22 +179,23 @@ Business Analytics & AI Graduate
 
     st.divider()
 
-    # Resume downloads
-    with open("resume_ml.pdf", "rb") as f:
-        st.download_button(
-            label="📄 ML Resume",
-            data=f,
-            file_name="Joy_Harrison_ML_Resume.pdf",
-            mime="application/pdf"
-        )
+    if os.path.exists(RESUME_ML):
+        with open(RESUME_ML, "rb") as f:
+            st.download_button(
+                label="📄 ML Resume",
+                data=f,
+                file_name="Joy_Harrison_ML_Resume.pdf",
+                mime="application/pdf"
+            )
 
-    with open("resume_da.pdf", "rb") as f:
-        st.download_button(
-            label="📄 Data Analyst Resume",
-            data=f,
-            file_name="Joy_Harrison_DA_Resume.pdf",
-            mime="application/pdf"
-        )
+    if os.path.exists(RESUME_DA):
+        with open(RESUME_DA, "rb") as f:
+            st.download_button(
+                label="📄 Data Analyst Resume",
+                data=f,
+                file_name="Joy_Harrison_DA_Resume.pdf",
+                mime="application/pdf"
+            )
 
     st.link_button("🔗 LinkedIn", "https://www.linkedin.com/in/joy-harrison/")
     st.link_button("💻 GitHub", "https://github.com/JoyHarrison")
@@ -202,7 +216,6 @@ with col2:
 
 st.divider()
 
-# Suggested questions
 st.subheader("💡 Suggested Questions")
 
 suggested = [
